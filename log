@@ -1,10 +1,30 @@
 #!/bin/bash
-ip=$1
-shift
 set -x
-if entry=$(egrep "^[0-9\.]*$ip" ~/etc/login-hints); then
+if [[ $(basename $0) == 'lcp' ]]; then
+    echo yes
+    scp=1
+    ip="${@: -1}"
+    length=$(($#-1))
+    args=${@:1:$length} 
+else
+    ip=$1
+    shift
+    args=$*
+fi
+
+if [[ $scp == 1 ]]; then
+    match_ip=${ip%%:*}
+else
+    match_ip=$ip
+fi
+if entry=$(egrep "^[0-9\.]*$match_ip" ~/etc/login-hints); then
     login=${entry##*:}
-    ssh $login $*
+    if [[ "$scp" == 1 ]];then
+        scp $args $login
+    else
+        ssh $login $args
+    fi
+
 else
     ssh $*
 fi
