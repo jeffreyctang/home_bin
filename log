@@ -17,16 +17,16 @@ if [[ $scp == 1 ]]; then
 else
     match_ip=$ip
 fi
-if entry=$(egrep "^[0-9\.]*$match_ip" ~/etc/login-hints); then
+if entry=$(egrep "^[0-9\.]*${match_ip}:" ~/etc/login-hints); then
     login=${entry##*:}
     if [[ "$scp" == 1 ]];then
-        scp $args $login
+        scp $args $login:${ip##*:}
     else
         ssh $login $args
     fi
 
 else
-    ssh $*
+    ssh ubuntu@$ip $args
 fi
 
 
